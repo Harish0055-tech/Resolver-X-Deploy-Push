@@ -124,10 +124,10 @@ function SuperAdminPortal() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Admin Portal</h1>
-        <p className="text-sm text-gray-400">Manage users and resolver accounts</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Admin Portal</h1>
+        <p className="text-sm text-muted-foreground">Manage users and resolver accounts</p>
       </div>
 
       <Tabs
@@ -135,34 +135,34 @@ function SuperAdminPortal() {
         onValueChange={(val) => setSearchParams({ tab: val })}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-2 bg-white/5 backdrop-blur border border-white/10 rounded-xl">
-          <TabsTrigger value="users" className="data-[state=active]:bg-white/10 rounded-lg">Users</TabsTrigger>
-          <TabsTrigger value="resolvers" className="data-[state=active]:bg-white/10 rounded-lg">Resolvers</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="resolvers">Resolvers</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
-          <Card className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl shadow-lg">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-white">User Management</CardTitle>
+              <CardTitle>User Management</CardTitle>
             </CardHeader>
-            <CardContent className="p-0 overflow-x-auto">
+            <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/10">
-                    <TableHead className="text-gray-400">Name</TableHead>
-                    <TableHead className="text-gray-400">Email</TableHead>
-                    <TableHead className="text-gray-400">Created</TableHead>
-                    <TableHead className="text-gray-400">Action</TableHead>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
-                    <TableRow key={user._id} className="hover:bg-white/5 transition">
-                      <TableCell className="font-medium text-white">{user.fullName}</TableCell>
-                      <TableCell className="text-gray-300">{user.username}</TableCell>
-                      <TableCell className="text-gray-400">{format(new Date(user.createdAt), "MMM d, yyyy")}</TableCell>
+                    <TableRow key={user._id}>
+                      <TableCell>{user.fullName}</TableCell>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{format(new Date(user.createdAt), "MMM d, yyyy")}</TableCell>
                       <TableCell>
-                        <Button variant="destructive" size="sm" className="rounded-lg">
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteUser(user._id)}>
                           Delete
                         </Button>
                       </TableCell>
@@ -170,7 +170,7 @@ function SuperAdminPortal() {
                   ))}
                   {users.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="py-8 text-center text-gray-500">
+                      <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
                         No users found
                       </TableCell>
                     </TableRow>
@@ -181,72 +181,99 @@ function SuperAdminPortal() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="resolvers" className="space-y-6">
-          <Card className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl shadow-lg">
+        <TabsContent value="resolvers" className="space-y-4">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-white">Create Resolver</CardTitle>
+              <CardTitle>Create Resolver</CardTitle>
             </CardHeader>
             <CardContent>
               <form className="grid gap-4 md:grid-cols-4" onSubmit={handleCreateResolver}>
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Email</Label>
-                  <Input className="bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-yellow-500" value={resolverEmail} onChange={(e) => setResolverEmail(e.target.value)} />
+                  <Label>Email</Label>
+                  <Input value={resolverEmail} onChange={(e) => setResolverEmail(e.target.value)} placeholder="resolver@company.com" required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Password</Label>
-                  <Input className="bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-yellow-500" value={resolverPassword} onChange={(e) => setResolverPassword(e.target.value)} />
+                  <Label>Password</Label>
+                  <Input value={resolverPassword} onChange={(e) => setResolverPassword(e.target.value)} placeholder="Password" required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Category</Label>
-                  <select className="h-10 w-full rounded-md bg-white/5 border border-white/10 text-white px-3">
+                  <Label>Category / Role</Label>
+                  <select
+                    className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                    value={resolverCategory}
+                    onChange={(e) => setResolverCategory(e.target.value)}
+                  >
                     {resolverCategories.map((c) => (
-                      <option key={c}>{c}</option>
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div className="flex items-end">
-                  <Button className="w-full bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-medium rounded-lg hover:opacity-90">
-                    Create
-                  </Button>
+                  <Button type="submit" className="w-full">Create Resolver</Button>
                 </div>
               </form>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl shadow-lg">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-white">Resolver Management</CardTitle>
+              <CardTitle>Resolver Management</CardTitle>
             </CardHeader>
-            <CardContent className="p-0 overflow-x-auto">
+            <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-white/10">
-                    <TableHead className="text-gray-400">Name</TableHead>
-                    <TableHead className="text-gray-400">Email</TableHead>
-                    <TableHead className="text-gray-400">Category</TableHead>
-                    <TableHead className="text-gray-400">Update</TableHead>
-                    <TableHead className="text-gray-400">Action</TableHead>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Update Category</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {resolvers.map((resolver) => (
-                    <TableRow key={resolver._id} className="hover:bg-white/5 transition">
-                      <TableCell className="text-white">{resolver.fullName}</TableCell>
-                      <TableCell className="text-gray-300">{resolver.username}</TableCell>
-                      <TableCell className="text-gray-400">{resolver.category}</TableCell>
+                    <TableRow key={resolver._id}>
+                      <TableCell>{resolver.fullName}</TableCell>
+                      <TableCell>{resolver.username}</TableCell>
+                      <TableCell>{resolver.category || "Unassigned"}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <select className="h-9 rounded-md bg-white/5 border border-white/10 text-white px-2" />
-                          <Button size="sm" className="rounded-lg">Update</Button>
+                          <select
+                            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                            value={roleDraft[resolver._id] ?? resolver.category ?? "IT Support"}
+                            onChange={(e) => setRoleDraft((prev) => ({ ...prev, [resolver._id]: e.target.value }))}
+                          >
+                            {resolverCategories.map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
+                          </select>
+                          <Button size="sm" onClick={() => handleUpdateResolverCategory(resolver)}>
+                            Update
+                          </Button>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Button variant="destructive" size="sm" className="rounded-lg">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteResolver(resolver)}
+                        >
                           Delete
                         </Button>
                       </TableCell>
                     </TableRow>
                   ))}
+                  {resolvers.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
+                        No resolvers found
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -275,73 +302,118 @@ function ResolverDashboard() {
     [queries, filter]
   );
 
+  const handleStatusUpdate = (e, id, status) => {
+    e.stopPropagation();
+    updateQueryStatus(id, status);
+    toast.success(`Status updated to ${status}`);
+  };
+
+  const handleDelete = (e, id, subject) => {
+    e.stopPropagation();
+    if (confirm(`Are you sure you want to delete query "${subject}"?`)) {
+      deleteQuery(id);
+      toast.success("Query deleted successfully");
+    }
+  };
+
   const summaryCards = [
-    { label: "Total Queries", count: counts.total, icon: Inbox },
-    { label: "Open", count: counts.open, icon: AlertCircle },
-    { label: "In Progress", count: counts.inProgress, icon: Clock },
-    { label: "Resolved", count: counts.resolved, icon: CheckCircle2 },
+    { label: "Total Queries", count: counts.total, icon: Inbox, color: "text-primary" },
+    { label: "Open", count: counts.open, icon: AlertCircle, color: "text-[hsl(var(--info))]" },
+    { label: "In Progress", count: counts.inProgress, icon: Clock, color: "text-[hsl(var(--warning))]" },
+    { label: "Resolved", count: counts.resolved, icon: CheckCircle2, color: "text-[hsl(var(--success))]" },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-semibold text-white">Resolver Dashboard</h1>
-        <p className="text-gray-400 text-sm">
-          {userFullName} {userCategory && `· ${userCategory}`}
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Resolver Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            {userFullName ? `${userFullName}` : "Resolver"}
+            {userCategory ? ` · ${userCategory}` : ""}
+            {" — Manage and resolve support queries"}
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {summaryCards.map((card) => (
-          <Card key={card.label} className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl hover:scale-[1.02] transition">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm text-gray-400">{card.label}</CardTitle>
-              <card.icon className="h-4 w-4 text-yellow-400" />
+          <Card key={card.label}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{card.label}</CardTitle>
+              <card.icon className={`h-4 w-4 ${card.color}`} />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-white">{card.count}</div>
+              <div className="text-2xl font-bold">{card.count}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-white">All Queries</CardTitle>
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">All Queries</CardTitle>
+            <div className="flex gap-1">
+              {["all", "open", "in-progress", "resolved", "closed"].map((sf) => (
+                <Button key={sf} variant={filter === sf ? "secondary" : "ghost"} size="sm" className="h-7 text-xs" onClick={() => setFilter(sf)}>
+                  {sf === "in-progress" ? "In Progress" : sf.charAt(0).toUpperCase() + sf.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="p-0 overflow-x-auto">
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-white/10">
-                <TableHead>ID</TableHead>
+              <TableRow>
+                <TableHead className="w-24">ID</TableHead>
                 <TableHead>Subject</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="hidden md:table-cell">Category</TableHead>
+                <TableHead className="hidden md:table-cell">Submitted By</TableHead>
                 <TableHead>Priority</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="hidden lg:table-cell">Date</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((q) => (
-                <TableRow key={q.id} className="hover:bg-white/5 cursor-pointer" onClick={() => navigate(`/queries/${q.id}`)}>
-                  <TableCell className="text-gray-400">{q.id}</TableCell>
-                  <TableCell className="text-white">{q.subject}</TableCell>
-                  <TableCell><StatusBadge status={q.status} /></TableCell>
+                <TableRow key={q.id} className="cursor-pointer" onClick={() => navigate(`/queries/${q.id}`)}>
+                  <TableCell className="font-mono text-xs">{q.id}</TableCell>
+                  <TableCell className="max-w-[200px] truncate font-medium">{q.subject}</TableCell>
+                  <TableCell className="hidden text-sm text-muted-foreground md:table-cell">{q.category}</TableCell>
+                  <TableCell className="hidden text-sm text-muted-foreground md:table-cell">{q.submittedBy || "—"}</TableCell>
                   <TableCell><PriorityBadge priority={q.priority} /></TableCell>
+                  <TableCell><StatusBadge status={q.status} /></TableCell>
+                  <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">{format(new Date(q.createdAt), "MMM d, yyyy")}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4 text-gray-300" />
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Update</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={(e) => handleStatusUpdate(e, q.id, "open")}>Mark as Open</DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => handleStatusUpdate(e, q.id, "in-progress")}>Mark as In Progress</DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => handleStatusUpdate(e, q.id, "resolved")}>Mark as Resolved</DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => handleStatusUpdate(e, q.id, "closed")}>Mark as Closed</DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => handleDelete(e, q.id, q.subject)} className="text-destructive focus:text-destructive">
+                          Delete Query
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                    No queries found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -11,15 +12,24 @@ import { ModeToggle } from "@/components/mode-toggle";
 const ADMIN_EMAIL = "admin@admin.com";
 const ADMIN_PASSWORD = "123";
 
+const demoCredentials = [
+  { type: "User", email: "user@test.com", password: "user123" },
+  { type: "Resolver", email: "resolver@test.com", password: "resolver@123" },
+  { type: "Admin", email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
+];
+
 const loginTypeMeta = {
   user: {
     title: "User",
+    gradient: "from-sky-500 to-cyan-500",
   },
   resolver: {
     title: "Resolver",
+    gradient: "from-emerald-500 to-teal-500",
   },
   admin: {
     title: "Admin",
+    gradient: "from-orange-500 to-rose-500",
   },
 };
 
@@ -30,6 +40,8 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { login, logout } = useAuth();
+
+  const activeMeta = loginTypeMeta[loginType];
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,54 +85,57 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#020617] px-4 text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-950 dark:to-slate-900 p-4">
 
+      {/* Theme Toggle */}
       <div className="absolute top-4 right-4">
         <ModeToggle />
       </div>
 
-      <Card className="w-full max-w-5xl grid md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl">
+      <Card className="w-full max-w-5xl grid md:grid-cols-2 overflow-hidden shadow-2xl rounded-2xl border border-slate-200 dark:border-slate-700">
 
-        {/* LEFT */}
-        <div className="hidden md:flex flex-col justify-center p-10 border-r border-white/10">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Resolve <span className="text-yellow-400">X</span>
+        {/* LEFT SIDE */}
+        <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+          <h1 className="text-4xl font-bold tracking-tight">
+            Resolve X
           </h1>
-
-          <p className="mt-4 text-sm text-gray-400 leading-6">
-            A premium support platform designed to streamline query handling,
-            empower resolvers, and give admins full control.
+          <p className="mt-4 text-sm text-slate-300 leading-6">
+            A smart issue resolution platform where users report, resolvers fix,
+            and admins manage everything efficiently.
           </p>
 
-          <div className="mt-8 space-y-3 text-sm text-gray-300">
-            <p>✔ Role-based access</p>
-            <p>✔ Smart workflow</p>
-            <p>✔ Clean & scalable UI</p>
+          <div className="mt-8 space-y-3 text-sm">
+            <p>✔ Role-based authentication</p>
+            <p>✔ Clean workflow management</p>
+            <p>✔ Fast and scalable system</p>
           </div>
         </div>
 
-        {/* RIGHT */}
-        <div className="p-8 md:p-10">
+        {/* RIGHT SIDE */}
+        <div className="p-8 md:p-10 bg-white dark:bg-slate-900">
 
           <CardContent className="p-0">
 
+            {/* Heading */}
             <div className="mb-6">
-              <h2 className="text-3xl font-semibold text-white">Sign in</h2>
-              <p className="text-sm text-gray-400 mt-1">
-                Access your account
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Sign in
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Access your account securely
               </p>
             </div>
 
-            {/* Tabs */}
-            <div className="flex bg-white/5 p-1 rounded-xl mb-6 border border-white/10">
+            {/* Login Type Tabs */}
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-6">
               {["user", "resolver", "admin"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setLoginType(type)}
-                  className={`flex-1 py-2 text-sm rounded-lg transition ${
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition ${
                     loginType === type
-                      ? "bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-medium"
-                      : "text-gray-400 hover:bg-white/10"
+                      ? `bg-gradient-to-r ${loginTypeMeta[type].gradient} text-white`
+                      : "text-slate-600 dark:text-slate-300"
                   }`}
                 >
                   {loginTypeMeta[type].title}
@@ -128,45 +143,83 @@ const Login = () => {
               ))}
             </div>
 
+            {/* Form */}
             <form onSubmit={handleLogin} className="space-y-5">
 
               <div>
-                <Label className="text-gray-300">Email</Label>
+                <Label>Email</Label>
                 <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 h-11 bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-yellow-500"
+                  className="h-12 mt-1 rounded-lg focus:ring-2 focus:ring-cyan-500"
                   placeholder="Enter your email"
                 />
               </div>
 
               <div>
-                <Label className="text-gray-300">Password</Label>
+                <Label>Password</Label>
                 <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 h-11 bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-yellow-500"
+                  className="h-12 mt-1 rounded-lg focus:ring-2 focus:ring-cyan-500"
                   placeholder="Enter your password"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-medium hover:opacity-90"
+                className={`w-full h-12 text-base font-semibold rounded-lg bg-gradient-to-r ${activeMeta.gradient} shadow-md hover:shadow-lg transition`}
               >
-                Sign in as {loginTypeMeta[loginType].title}
+                Sign in as {activeMeta.title}
               </Button>
 
             </form>
           </CardContent>
 
+          {/* Footer */}
           <CardFooter className="flex flex-col mt-6 space-y-4 p-0">
 
-            <p className="text-sm text-center text-gray-400">
+            {/* Demo Table */}
+            {/* <div className="w-full">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">
+                Demo Credentials
+              </p>
+
+              <Table className="border rounded-lg overflow-hidden">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Password</TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {demoCredentials.map((cred) => (
+                    <TableRow
+                      key={cred.type}
+                      className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      onClick={() => {
+                        setLoginType(cred.type.toLowerCase());
+                        setEmail(cred.email);
+                        setPassword(cred.password);
+                      }}
+                    >
+                      <TableCell>{cred.type}</TableCell>
+                      <TableCell>{cred.email}</TableCell>
+                      <TableCell>{cred.password}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div> */}
+
+            {/* Signup */}
+            <p className="text-sm text-center text-muted-foreground">
               Don’t have an account?{" "}
-              <Link to="/register" className="text-yellow-400 hover:underline">
+              <Link to="/register" className="text-primary font-medium hover:underline">
                 Sign up
               </Link>
             </p>

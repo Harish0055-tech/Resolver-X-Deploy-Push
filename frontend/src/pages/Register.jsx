@@ -18,12 +18,10 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-
         if (password !== confirmPassword) {
             toast.error("Passwords do not match");
             return;
         }
-
         if (name && email && password) {
             const result = await register(name, email, password, "user", null);
             if (result.success) {
@@ -38,91 +36,74 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B0F19] via-[#0F172A] to-[#020617] px-4 text-white">
-
-            <div className="absolute top-4 right-4">
+        <div className="relative flex min-h-screen items-center justify-center p-4">
+            <div className="absolute right-4 top-4">
                 <ModeToggle />
             </div>
-
-            <Card className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl">
-
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-semibold">
-                        Create Account
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">
-                        Join ResolveX and get started
+            <Card className="rx-surface rx-glow w-full max-w-md border-0">
+                <CardHeader>
+                    <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
+                    <CardDescription className="text-center">
+                        Enter your details to register
                     </CardDescription>
                 </CardHeader>
-
                 <CardContent>
-                    <form onSubmit={handleRegister} className="space-y-5">
-
-                        <div>
-                            <Label className="text-gray-300">Full Name</Label>
+                    <form onSubmit={handleRegister} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Full Name</Label>
                             <Input
+                                id="name"
                                 type="text"
                                 placeholder="John Doe"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="mt-1 h-11 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-yellow-500"
                                 required
                             />
                         </div>
-
-                        <div>
-                            <Label className="text-gray-300">Email</Label>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
                             <Input
+                                id="email"
                                 type="email"
                                 placeholder="m@example.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 h-11 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-yellow-500"
                                 required
                             />
                         </div>
-
-                        <div>
-                            <Label className="text-gray-300">Password</Label>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
                             <Input
+                                id="password"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 h-11 bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-yellow-500"
                                 required
                             />
                         </div>
-
-                        <div>
-                            <Label className="text-gray-300">Confirm Password</Label>
+                        <div className="space-y-2">
+                            <Label htmlFor="confirmPassword">Confirm Password</Label>
                             <Input
+                                id="confirmPassword"
                                 type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="mt-1 h-11 bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-yellow-500"
                                 required
                             />
                         </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full h-11 rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-medium hover:opacity-90 transition"
-                        >
+                        <Button type="submit" className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500">
                             Register
                         </Button>
-
                     </form>
                 </CardContent>
-
                 <CardFooter className="flex justify-center">
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                         Already have an account?{" "}
-                        <Link to="/login" className="text-yellow-400 hover:underline">
+                        <Link to="/login" className="text-primary hover:underline">
                             Login here
                         </Link>
                     </p>
                 </CardFooter>
-
             </Card>
         </div>
     );

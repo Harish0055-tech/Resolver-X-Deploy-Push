@@ -72,11 +72,11 @@ export default function QueryDetail() {
   if (!query) {
     return (
       <AppLayout>
-        <div className="text-center py-20 text-white">
+        <div className="text-center py-20">
           <h2 className="text-xl font-semibold mb-2">Query not found</h2>
-          <p className="text-gray-400 mb-4">The ticket you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground mb-4">The ticket you're looking for doesn't exist.</p>
           <Link to={userRole === 'admin' ? "/" : "/queries"}>
-            <Button variant="outline">Back</Button>
+            <Button variant="outline">Back to {userRole === 'admin' ? 'Resolver Dashboard' : 'My Queries'}</Button>
           </Link>
         </div>
       </AppLayout>
@@ -85,46 +85,49 @@ export default function QueryDetail() {
 
   const handleStatusChange = (newStatus) => {
     updateQueryStatus(query.id, newStatus);
-    toast({ title: "Status updated", description: `Changed to ${newStatus}` });
+    toast({
+      title: "Status updated",
+      description: `Query status changed to ${newStatus}`
+    });
   };
 
   const handleDelete = () => {
-    if (confirm(`Delete "${query.subject}"?`)) {
+    if (confirm(`Are you sure you want to delete query "${query.subject}"?`)) {
       deleteQuery(query.id);
-      sonnerToast.success("Query deleted");
+      sonnerToast.success("Query deleted successfully");
       navigate(userRole === 'admin' ? "/" : "/queries");
     }
   };
 
   return (
     <AppLayout>
-      <div className="space-y-8 text-white">
-
+      <div className="space-y-6">
         {/* Breadcrumb */}
-        <div className="text-sm text-gray-400 flex items-center gap-2">
-          <Link to={userRole === 'admin' ? "/" : "/queries"} className="flex items-center gap-1 hover:text-white">
-            <ArrowLeft className="h-4 w-4" />
-            Back
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link to={userRole === 'admin' ? "/" : "/queries"} className="hover:text-foreground flex items-center gap-1">
+            <ArrowLeft className="h-3.5 w-3.5" /> {userRole === 'admin' ? 'Resolver Dashboard' : 'My Queries'}
           </Link>
           <span>/</span>
-          <span className="text-gray-300">{query.id}</span>
+          <span className="text-foreground font-medium">{query.id}</span>
         </div>
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold">{query.subject}</h1>
-            <p className="text-sm text-gray-400 mt-1">
-              {query.submittedBy} • {format(new Date(query.createdAt), "MMM d, yyyy")}
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-xl font-bold tracking-tight">{query.subject}</h1>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span>Submitted by {query.submittedBy}</span>
+              <span>•</span>
+              <span>{format(new Date(query.createdAt), "MMM d, yyyy 'at' h:mm a")}</span>
+            </div>
           </div>
-
           <div className="flex items-center gap-2">
             <PriorityBadge priority={query.priority} />
             <StatusBadge status={query.status} />
             <Button
-              variant="ghost"
-              className="text-red-400 hover:bg-red-500/10"
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={handleDelete}
             >
               <Trash2 className="h-4 w-4 mr-1" />
@@ -134,97 +137,103 @@ export default function QueryDetail() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-
-          {/* LEFT */}
+          {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
-
-            {/* Description */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle>Description</CardTitle>
-              </CardHeader>
+            <Card>
+              <CardHeader><CardTitle className="text-base">Description</CardTitle></CardHeader>
               <CardContent>
-                <p className="text-gray-300 whitespace-pre-wrap text-sm leading-relaxed">
-                  {query.description}
-                </p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{query.description}</p>
               </CardContent>
             </Card>
 
             {/* Attachments */}
-            {query.attachments?.length > 0 && (
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+            {query.attachments && query.attachments.length > 0 && (
+              <Card>
                 <CardHeader>
-                  <CardTitle>Attachments ({query.attachments.length})</CardTitle>
+                  <CardTitle className="text-base">Attachments ({query.attachments.length})</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {query.attachments.map((file) => {
-                    const Icon = getFileIcon(file.type);
-                    return (
-                      <div key={file.id} className="flex justify-between items-center p-3 rounded-xl bg-white/5 hover:bg-white/10 transition">
-                        <div className="flex items-center gap-3">
-                          <Icon className="h-5 w-5 text-yellow-400" />
-                          <div>
-                            <p className="text-sm font-medium">{file.name}</p>
-                            <p className="text-xs text-gray-400">{formatFileSize(file.size)}</p>
+                <CardContent>
+                  <div className="space-y-2">
+                    {query.attachments.map((attachment) => {
+                      const FileIcon = getFileIcon(attachment.type);
+                      return (
+                        <div
+                          key={attachment.id}
+                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="h-10 w-10 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                              <FileIcon className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{attachment.name}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{formatFileSize(attachment.size)}</span>
+                                <span>•</span>
+                                <span>{format(new Date(attachment.uploadedAt), "MMM d, yyyy")}</span>
+                              </div>
+                            </div>
                           </div>
+                          <a href={attachment.url} download={attachment.name} target="_blank" rel="noreferrer">
+                            <Button variant="ghost" size="sm" className="shrink-0">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </a>
                         </div>
-                        <a href={file.url} target="_blank" rel="noreferrer">
-                          <Button size="sm" variant="ghost">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </a>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Activity */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle>Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {query.activities.map((a, i) => {
-                  const Icon = activityIcons[a.type];
+            {/* Activity Timeline */}
+            <Card>
+              <CardHeader><CardTitle className="text-base">Activity</CardTitle></CardHeader>
+              <CardContent className="space-y-0">
+                {query.activities.map((activity, i) => {
+                  const Icon = activityIcons[activity.type];
                   return (
-                    <div key={a.id} className="flex gap-3 mb-4">
-                      <div className="h-8 w-8 flex items-center justify-center rounded-full bg-white/10">
-                        <Icon className="h-4 w-4 text-gray-300" />
+                    <div key={activity.id} className="relative flex gap-3 pb-6 last:pb-0">
+                      {i < query.activities.length - 1 && (
+                        <div className="absolute left-[11px] top-6 bottom-0 w-px bg-border" />
+                      )}
+                      <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                        <Icon className="h-3 w-3 text-muted-foreground" />
                       </div>
-                      <div>
-                        <p className="text-sm">
-                          <span className="font-medium">{a.user}</span>{" "}
-                          <span className="text-gray-400 text-xs">
-                            {format(new Date(a.timestamp), "MMM d, h:mm a")}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 text-sm">
+                          <span className="font-medium">{activity.user}</span>
+                          <span className="text-muted-foreground text-xs">
+                            {format(new Date(activity.timestamp), "MMM d, h:mm a")}
                           </span>
-                        </p>
-                        <p className="text-xs text-gray-400">{a.content}</p>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-0.5">{activity.content}</p>
                       </div>
                     </div>
                   );
                 })}
               </CardContent>
             </Card>
-
           </div>
 
-          {/* RIGHT */}
+          {/* Sidebar info */}
           <div className="space-y-4">
-
+            {/* Super Admin Assignment Update */}
             {isSuperAdmin && (
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card>
                 <CardHeader>
-                  <CardTitle>Reassign</CardTitle>
+                  <CardTitle className="text-base">Reassign Query</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-
-                  <div>
-                    <Label className="text-xs text-gray-400">Category</Label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="bg-white/5 border-white/10">
-                        <SelectValue />
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground">Category</Label>
+                    <Select value={selectedCategory} onValueChange={(val) => {
+                      setSelectedCategory(val);
+                      setSelectedResolver("unassigned");
+                    }}>
+                      <SelectTrigger>
+                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {["IT Support", "HR", "Facilities", "Finance", "General"].map(c => (
@@ -233,44 +242,44 @@ export default function QueryDetail() {
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div>
-                    <Label className="text-xs text-gray-400">Assign</Label>
-                    <Select value={selectedResolver} onValueChange={setSelectedResolver}>
-                      <SelectTrigger className="bg-white/5 border-white/10">
-                        <SelectValue />
+                  
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground">Assign To</Label>
+                    <Select value={selectedResolver || "unassigned"} onValueChange={setSelectedResolver}>
+                      <SelectTrigger>
+                         <SelectValue placeholder="Select a resolver" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {resolvers.filter(r => r.category === selectedCategory).map(r => (
-                          <SelectItem key={r._id} value={r.fullName || r.username}>
-                            {r.fullName || r.username}
-                          </SelectItem>
+                          <SelectItem key={r._id} value={r.fullName || r.username}>{r.fullName || r.username}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <Button
-                    className="w-full bg-gradient-to-r from-yellow-600 to-yellow-400 text-black"
+                  <Button 
+                    className="w-full" 
                     onClick={() => {
-                      updateQueryAssignment(query.id, selectedResolver, selectedCategory);
-                      toast({ title: "Updated" });
+                        updateQueryAssignment(query.id, selectedResolver === "unassigned" ? "" : selectedResolver, selectedCategory);
+                        toast({ title: "Assignment updated", description: "Category and Resolver updated successfully" });
                     }}
                   >
-                    Update
+                    Update Assignment
                   </Button>
                 </CardContent>
               </Card>
             )}
 
+            {/* Resolver Status Update */}
             {userRole === 'admin' && (
-              <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
+              <Card>
                 <CardHeader>
-                  <CardTitle>Status</CardTitle>
+                  <CardTitle className="text-base">Update Status</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Select value={query.status} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="bg-white/5 border-white/10">
+                  <Select value={query.status} onValueChange={(value) => handleStatusChange(value)}>
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -280,22 +289,39 @@ export default function QueryDetail() {
                       <SelectItem value="closed">Closed</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Change the status of this query
+                  </p>
                 </CardContent>
               </Card>
             )}
 
-            <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle>Details</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm space-y-3">
-                <p><span className="text-gray-400">ID:</span> {query.id}</p>
-                <p><span className="text-gray-400">Category:</span> {query.category}</p>
-                <p><span className="text-gray-400">Assigned:</span> {query.assignedTo || "Unassigned"}</p>
-                <p><span className="text-gray-400">Updated:</span> {format(new Date(query.updatedAt), "MMM d, yyyy")}</p>
+            <Card>
+              <CardHeader><CardTitle className="text-base">Details</CardTitle></CardHeader>
+              <CardContent className="space-y-4 text-sm">
+                {[
+                  { label: "Ticket ID", value: query.id },
+                  { label: "Category", value: query.category },
+                  { label: "Submitted By", value: query.submittedBy || "—" },
+                  { label: "Assigned To", value: query.assignedTo || "Unassigned" },
+                  { label: "Created", value: format(new Date(query.createdAt), "MMM d, yyyy") },
+                  { label: "Last Updated", value: format(new Date(query.updatedAt), "MMM d, yyyy") },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <p className="text-muted-foreground text-xs">{item.label}</p>
+                    <p className="font-medium">{item.value}</p>
+                  </div>
+                ))}
+                {query.originalCategory && (
+                  <div className="mt-2 rounded-md border border-yellow-400/40 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-2">
+                    <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400">⚠ Temporarily assigned to General</p>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-300 mt-0.5">
+                      No resolver found in <strong>{query.originalCategory}</strong>. Held by General until a specialist is available.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
-
           </div>
         </div>
       </div>

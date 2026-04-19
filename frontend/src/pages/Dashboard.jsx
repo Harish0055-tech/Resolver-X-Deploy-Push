@@ -35,24 +35,22 @@ export default function Dashboard() {
   );
 
   const summaryCards = [
-    { label: "Total Queries", count: counts.total, icon: Inbox },
-    { label: "Open", count: counts.open, icon: AlertCircle },
-    { label: "In Progress", count: counts.inProgress, icon: Clock },
-    { label: "Resolved", count: counts.resolved, icon: CheckCircle2 },
+    { label: "Total Queries", count: counts.total, icon: Inbox, color: "text-primary" },
+    { label: "Open", count: counts.open, icon: AlertCircle, color: "text-[hsl(var(--info))]" },
+    { label: "In Progress", count: counts.inProgress, icon: Clock, color: "text-[hsl(var(--warning))]" },
+    { label: "Resolved", count: counts.resolved, icon: CheckCircle2, color: "text-[hsl(var(--success))]" },
   ];
 
   return (
     <AppLayout>
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-white">Dashboard</h1>
-            <p className="text-gray-400 text-sm">Overview of support queries</p>
+            <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground text-sm">Overview of support queries</p>
           </div>
-
           <Link to="/submit">
-            <Button className="flex items-center gap-2 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-medium rounded-xl px-4 py-2 hover:opacity-90">
+            <Button className="gap-1.5">
               <PlusCircle className="h-4 w-4" /> New Query
             </Button>
           </Link>
@@ -61,38 +59,30 @@ export default function Dashboard() {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {summaryCards.map((card) => (
-            <Card
-              key={card.label}
-              className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl hover:scale-[1.02] transition"
-            >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm text-gray-400">{card.label}</CardTitle>
-                <card.icon className="h-4 w-4 text-yellow-400" />
+            <Card key={card.label}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{card.label}</CardTitle>
+                <card.icon className={`h-4 w-4 ${card.color}`} />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{card.count}</div>
+                <div className="text-2xl font-bold">{card.count}</div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Table Section */}
-        <Card className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl">
-          <CardHeader>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <CardTitle className="text-white">Recent Queries</CardTitle>
-
-              <div className="flex flex-wrap gap-2">
+        {/* Filters + Table */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Recent Queries</CardTitle>
+              <div className="flex gap-1">
                 {statusFilters.map((sf) => (
                   <Button
                     key={sf.value}
-                    variant="ghost"
+                    variant={filter === sf.value ? "secondary" : "ghost"}
                     size="sm"
-                    className={`text-xs rounded-full px-3 ${
-                      filter === sf.value
-                        ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                        : "text-gray-400 hover:bg-white/10"
-                    }`}
+                    className="text-xs h-7"
                     onClick={() => setFilter(sf.value)}
                   >
                     {sf.label}
@@ -101,49 +91,34 @@ export default function Dashboard() {
               </div>
             </div>
           </CardHeader>
-
-          <CardContent className="p-0 overflow-x-auto">
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow className="border-white/10">
-                  <TableHead className="text-gray-400">ID</TableHead>
-                  <TableHead className="text-gray-400">Subject</TableHead>
-                  <TableHead className="hidden md:table-cell text-gray-400">Category</TableHead>
-                  <TableHead className="text-gray-400">Priority</TableHead>
-                  <TableHead className="text-gray-400">Status</TableHead>
-                  <TableHead className="hidden lg:table-cell text-gray-400">Date</TableHead>
+                <TableRow>
+                  <TableHead className="w-24">ID</TableHead>
+                  <TableHead>Subject</TableHead>
+                  <TableHead className="hidden md:table-cell">Category</TableHead>
+                  <TableHead>Priority</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="hidden lg:table-cell">Date</TableHead>
                 </TableRow>
               </TableHeader>
-
               <TableBody>
                 {filtered.map((q) => (
-                  <TableRow
-                    key={q.id}
-                    className="cursor-pointer hover:bg-white/5 transition"
-                    onClick={() => navigate(`/queries/${q.id}`)}
-                  >
-                    <TableCell className="font-mono text-xs text-gray-400">{q.id}</TableCell>
-                    <TableCell className="font-medium text-white max-w-[200px] truncate">
-                      {q.subject}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-gray-400 text-sm">
-                      {q.category}
-                    </TableCell>
-                    <TableCell>
-                      <PriorityBadge priority={q.priority} />
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={q.status} />
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell text-gray-400 text-sm">
+                  <TableRow key={q.id} className="cursor-pointer" onClick={() => navigate(`/queries/${q.id}`)}>
+                    <TableCell className="font-mono text-xs">{q.id}</TableCell>
+                    <TableCell className="font-medium max-w-[200px] truncate">{q.subject}</TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground text-sm">{q.category}</TableCell>
+                    <TableCell><PriorityBadge priority={q.priority} /></TableCell>
+                    <TableCell><StatusBadge status={q.status} /></TableCell>
+                    <TableCell className="hidden lg:table-cell text-muted-foreground text-sm">
                       {format(new Date(q.createdAt), "MMM d, yyyy")}
                     </TableCell>
                   </TableRow>
                 ))}
-
                 {filtered.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       No queries found
                     </TableCell>
                   </TableRow>
