@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         if (isAuthenticated && userUsername) {
-            const newSocket = io("http://localhost:5000", {
+            const newSocket = io("https://resolver-x-deploy-push.onrender.com", {
                 transports: ["websocket", "polling"],
             });
             newSocket.on("connect", () => {
@@ -39,21 +39,21 @@ export const AuthProvider = ({ children }) => {
             fetch('/api/auth/me', {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data._id) {
-                    setIsAuthenticated(true);
-                    setUserRole(data.role);
-                    setUserUsername(data.username);
-                    setUserFullName(data.fullName);
-                    setUserCategory(data.category || null);
-                    setIsSuperAdmin(Boolean(data.isSuperAdmin || String(data.username || "").toLowerCase() === SUPER_ADMIN_EMAIL));
-                } else {
-                    localStorage.removeItem("token");
-                }
-            })
-            .catch(() => localStorage.removeItem("token"))
-            .finally(() => setLoading(false));
+                .then(res => res.json())
+                .then(data => {
+                    if (data._id) {
+                        setIsAuthenticated(true);
+                        setUserRole(data.role);
+                        setUserUsername(data.username);
+                        setUserFullName(data.fullName);
+                        setUserCategory(data.category || null);
+                        setIsSuperAdmin(Boolean(data.isSuperAdmin || String(data.username || "").toLowerCase() === SUPER_ADMIN_EMAIL));
+                    } else {
+                        localStorage.removeItem("token");
+                    }
+                })
+                .catch(() => localStorage.removeItem("token"))
+                .finally(() => setLoading(false));
         } else {
             setLoading(false);
         }
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
             body: JSON.stringify({ username: normalizedUsername, password })
         });
         const data = await res.json();
-        
+
         if (res.ok) {
             setIsAuthenticated(true);
             setUserRole(data.user.role);
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
             body: JSON.stringify({ fullName, username: normalizedUsername, password, role, category })
         });
         const data = await res.json();
-        
+
         if (res.ok) {
             setIsAuthenticated(true);
             setUserRole(data.user.role);
